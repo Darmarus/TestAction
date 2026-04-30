@@ -1,8 +1,9 @@
 name: Build
 
 on:
-  push:
-    branches: [master]
+   workflow_dispatch:
+ #concurrency:  push:
+  #  branches: [master]
 
 jobs:
   build:

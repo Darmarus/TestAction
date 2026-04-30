@@ -20,8 +20,12 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore NuGet
-      run: dotnet restore --configfile NuGet.config
-      shell: pwsh
+      run: |
+        $sln = Get-ChildItem -Recurse -Filter "*.sln" | Select-Object -First 1 -ExpandProperty FullName
+        Write-Host "Restoring: $sln"
+        dotnet restore $sln --configfile NuGet.config
+      shell: powershell
+
 
     # Assembly-Info-NetFramework@2 (wersjonowanie)
     - name: Set version
@@ -38,9 +42,12 @@ jobs:
       shell: pwsh
 
     # VSBuild@1
+        # VSBuild@1
     - name: Build
       run: |
-        dotnet build **/*.csproj `
+        $sln = Get-ChildItem -Recurse -Filter "*.sln" | Select-Object -First 1 -ExpandProperty FullName
+        Write-Host "Building: $sln"
+        dotnet build $sln `
           --configuration Release `
           --no-restore `
           /p:Version="${{ steps.version.outputs.VERSION }}" `
@@ -52,7 +59,8 @@ jobs:
           /p:Company="Agemit Sp. z o.o." `
           /p:Copyright="Copyright © ${{ steps.version.outputs.COPYRIGHT_DATE }} Agemit Sp. z o.o." `
           /p:Trademark="MD"
-      shell: pwsh
+      shell: powershell
+
 
     # PublishSymbols@2
     - name: Publish symbols
